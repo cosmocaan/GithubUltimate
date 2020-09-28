@@ -1,0 +1,741 @@
+Core Concepts:
+Most operations are local, meaning you can work almost entirely offline
+Open Source
+Free
+The standard for version control
+
+- The Repository
+Collection of Files Managed by Git
+History
+Working Directory
+.git folder is the history of the repository
+Tip: Focus the purpose of the repository
+
+- Commits and Files
+Snapshots are commits
+One or more file changes
+The main branch is called the master branch
+
+- Github
+Most popular hosting program
+
+- Quick installation
+git-scm.com  - Download the latest
+Install and open git bash
+Configure name and email:
+218666@QJ07307404 MINGW64 ~/Documents/Training/Github Ultimate
+$ git config --global user.name "Mike Thomasson"
+
+218666@QJ07307404 MINGW64 ~/Documents/Training/Github Ultimate
+$ git config --global user.email "mikee497@gmail.com"
+
+Install Notepad ++
+Setup Notepad++ to be able to execute from gitbash
+   Add C:\Program Files]Notepad++ to the path
+   Close and reopen git bash
+     Add .bash_profile
+	   notepad++ ~/.bash_profile
+       Insert - alias npp='notepad++ -multiInst -nosession'
+
+Set the default editor in git:
+218666@QJ07307404 MINGW64 ~
+$ git config --global core.editor "notepad++ -multiInst -nosession"
+
+218666@QJ07307404 MINGW64 ~
+$ git config --global -e
+hint: Waiting for your editor to close the file...
+
+The config commands update .gitconfig
+
+Install P4Merge:
+Visual Compare and Merge Tool
+Command Line Merging is annoying
+Optional, but highly recommended
+
+http://peforce.com
+navigate to Helix Clients Downloads page
+Find the p4merge download and run it.
+ Only install the visual tool
+
+Configure p4merge as the diff and merge tool in git
+git config --global diff.tool p4merge
+git config --global difftool.p4merge.path "C:/Program Files/Perforce/p4merge.exe"
+git config --global difftool.prompt false
+
+git config --global merge.tool p4merge
+git config --global mergetool.p4merge.path "C:/Program Files/Perforce/p4merge.exe"
+git config --global mergetool.prompt false
+
+The Basics
+- Initialization 
+  Starting a git repo
+# mkdir projects
+# cd projects
+# pwd
+# git init demo
+# ls
+# cd demo
+# ls -la
+
+- git States
+  The Basic Workflow
+  3 local states of git
+Working Directory 
+Staging Area
+Repository (.git folder) contains the history of modifications
+
+  First Commit
+git status lists the current state of the repo
+git add somefile copies the file to the staging area
+git commit -m "somecomments" commits the changes to the repo
+Running git status again will show no filed needing to be added
+
+
+Remove project/demo/.git
+This will leave just the files with no version control.
+
+This will bring the demo folder into version control:
+cd project/demo
+git init . 
+git status
+git add .
+
+- Commits and Messages
+Create LICENSE.md
+git status
+git add .  <-- Adds all untracked files in the current folder to stage
+git commit  <-- Opens the default text editor configured earlier.  Add your text, save and close for the commit to complete
+
+- Commit details with log and show
+git log <-- lists all of the commit history
+
+git show <-- shows the last commit and the diff
+
+- Express commits
+Add some new text to the README.md
+git status <-- Shows the file as modified instead of untracked
+git ls-files <-- Lists the files being tracked
+
+touch new.file
+git status <-- Now shows one modified file and one untracked file
+git ls-files <-- still only shows the tracked files
+
+rm -f test.file <-- just to clean up the directory
+
+git commit -am "Updating README"
+
+git log <-- Now shows this new commit
+
+
+- Backing out changes
+Unstage from staging area and cleaning up entirely
+Modify the README.md again with bogus text
+git status
+git add .
+git status <-- lists changes staged but not committed with message for undo -  (use "git restore --staged <file>..." to unstage)
+git restore --staged README.md
+git status <-- shows the README.md as modified again
+
+Restore the file back to the original file:
+git checkout -- README.md
+git status <-- shows no files modified or new
+cat README.md <-- file is back to before adding bogus text
+
+- History and Alias
+git help log <-- get man for log
+git log --oneline --graph --decorate --all <-- Makes the log (history) more presentable
+
+Alias the command:
+git config --global alias.hist "log --oneline --graph --decorate --all"
+git config --global --list
+
+Run the alias:
+git hist
+( or for an individual file )
+git hist -- README.md
+
+
+- Rename and Delete files
+vi example.txt
+git status
+git add .
+git commit - "adding example file"
+git mv example.txt demo.txt <-- renames the file
+git status <-- Shows the changes to be committed  shows as renamed
+git commit -m "renaming example"
+
+Remove a file so git tracks the deletion:
+git rm demo.txt
+git status <-- Shows one commit needed  as deleted
+git commit -m "Removed demo file"
+
+Managing Files Outside git
+touch myfile.txt
+mv LICENSE.md LICENSE.txt
+git status  <-- Sees deletec LICENSE.md and Untracked LICENSE.txt and myfile.txt
+git add -u  <-- Only tracks the deleted file and not untracke--help
+git add -A  <-- Covers all types of modifications in the working directory
+rm -f myfile.txt
+git status
+git add -u
+git commit -m "removed myfile"
+
+Excluding Unwanted Files
+vi application.log   <-- We will ignore this file
+git status           <-- Shows the untracked file
+vi .gitignore        <-- We add *.log to ignore this file
+git status           <-- Ignores the log but shows .gitignore
+
+
+- Advanced: Beyond the Basics
+Comparing Differences
+git hist
+git diff e7b71c0 HEAD   <-- HEAD is a special pointer 
+git difftool e7b71c0 HEAD  <-- Opens in p4merge
+vi README.md
+git status
+git difftool  <-- Review diff in p4merge
+git help diff
+
+Branching and Merging
+Types of Merges:
+  Fast Forward - Simlpest Case, Commits on Destination (Master), Can be Disabled
+  Automatic Merges - Non-Conflicting Merge Detected, Preserves both TImelines, Commits on Destination
+  Manual Merge - Automatic Merge not Possible, Conflicting Merge State, Changes Saved in Merge Commit
+
+Special Markers (pointers)
+HEAD - points to the last commit of current branch 
+		Can be moved (Advanced)
+
+Simple Branching (A Fork in Time)
+git status   <-- README.md is still not committed from last section
+git branch   <-- * master (asterisk indicates current branch)
+git checkout -b updates   <-- create an "updates" branch. Also carries over any staged files to the new branch
+vi README.md
+git add .
+git commit -m "Adding updates from branch"
+git status
+git hist   <-- You see master, but now HEAD points to the updates branch
+git diff updates master  <-- Shows diff between master and updates branch
+
+  To integrate updates with master, you need to switch to master
+git checkout master
+git hist  <-- HEAD is now pointing to master
+git merge updates   <-- merges updates into master using Fast Forward
+git hist  <-- HEAD now points to master and updates since they are identical.
+git branch -d updates  <-- delete the branch
+git hist  <-- updates was just a timelnie label and has now been removed
+
+Conflict Resolution
+git checkout -b very-bad
+git branch -a   <-- shows all 
+vi README.md  <-- change a line to "This is bound to cause trouble!"
+git commit -am "very bad update"
+git hist
+git checkout master   <-- pretend to be another developer
+vi README.md  <-- change same line to "I hope this isn't much of a problem"
+git commit -am "Causing issues again"
+git branch -a
+git merge very-bad
+  Auto-merging README.md
+  CONFLICT (content): Merge conflict in README.md
+  Automatic merge failed; fix conflicts and then commit the result.
+cat README.md  <-- Notice the lines with < and > symbols showing the conflict. Prompt changes with MERGINF too
+  # Demo Project README
+
+  This is a simple readme file
+
+  Adding more text
+
+  Opening more line
+
+
+  <<<<<<< HEAD
+  I hope this isn't much of a problem
+  =======
+  This is bound to cause trouble!
+  >>>>>>> very-bad
+git mergetool  <-- Lists all 3 files and a possible solution at the bottom
+  In p4merge, select the icon on the right with the color of the correct line.  Save, then quit
+  Takes you back to your command line
+git commit -m "Resolving conflict"
+git status  <-- README.md.orig is Untracked. Add *.orig to .gitignore
+echo "*.orig" >> .gitignore
+git status
+git commit -am "Updating .gitignore for *.orig"
+rm -f README.md.orig
+
+Marking Special Events with Tagging
+  Tags are labels to mark points in the history
+git tag mytag   <-- lightweight tag
+git tag --list
+git hist   <-- tag: mytag is shown with master and the HEAD pointer
+git tag -d mytag 
+git tag -a v1.0 -m "Release 1.0"  <-- Annotated tag
+git tag --list
+git hist
+git show v1.0  <-- Shows detailed information on the last commit
+
+Stashing - Saving temporary changes
+Modify README.md
+git status    	<-- Shows a change not staged for commit
+git stash     	<-- Saves HEAD as a Work in Progress (WIP)
+git stash list
+git status 	<-- Shows nothing to commit
+vi LICENSE.txt
+git commit -am "updating license file"
+git status 		<-- Shows nothing to commit
+git stash pop 	<-- Pulls the README.md back as a change not stages for commit
+git stash list 	<-- Nothing stashed
+git commit -am "updating README file"
+
+Time travel with Reset and Reflog:
+Edit README.md
+git add .
+git status
+Add another line
+git status
+git hist
+git reset ID_to_reset --soft  <-- --soft reset changes where HEAD is pointing to (Mixed is the default) HARD IS THE MOST DESTRUCTIVE OF THE RESET MODES
+
+git status    <-- shows the new HEAD area
+git reset lower_in_the_hist --mixed
+git log --oneline  		<-- History is shorter
+git reset lower_in_the_hist --hard  
+git log --oneline      	<-- No history is shown before
+git reset --hard last commit before moving hist around
+
+
+-- Welcome to github
+Setup account
+Create a demo repository  	<-- Creating a new repository gives instructions for command line or push an existing repo from the command line
+
+Linking a github repository:
+Use the push from the command line option, but here are examples of both:
+Quick setup — if you’ve done this kind of thing before
+or	
+HTTPS
+SSH
+git@ghe.aa.com:00218666/demo.git
+Get started by creating a new file or uploading an existing file. We recommend every repository include a README, LICENSE, and .gitignore.
+
+…or create a new repository on the command line
+echo "# demo" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git remote add origin git@ghe.aa.com:00218666/demo.git
+git push -u origin master
+…or push an existing repository from the command line
+git remote add origin git@ghe.aa.com:00218666/demo.git
+git push -u origin master
+
+git remote -v    <-- Shows nothing
+git remote add origin git@ghe.aa.com:00218666/demo.git
+git remove -v   	<-- Shows 2 origins (fetch and push)
+
+Pushing a github repository:
+git status
+git push -u origin master --tags  <-- -u sets up a tracking relationship betweenthe local and remote repositories
+   Error: git@ghe.aa.com: Permission denied (publickey).
+   Had to copy c:\users\218666\.ssh\id_rsa.pub key to github
+   
+   
+$ git push -u origin master --tags
+Enumerating objects: 39, done.
+Counting objects: 100% (39/39), done.
+Delta compression using up to 4 threads
+Compressing objects: 100% (34/34), done.
+Writing objects: 100% (39/39), 3.51 KiB | 171.00 KiB/s, done.
+Total 39 (delta 15), reused 0 (delta 0)
+remote: Resolving deltas: 100% (15/15), done.
+To ghe.aa.com:00218666/demo.git
+ * [new branch]      master -> master
+ * [new tag]         v1.0 -> v1.0
+Branch 'master' set up to track remote branch 'master' from 'origin'.
+
+Verify our changes to github:
+Click on the repo in github and verify files and README shows up. 
+Check commit history
+Click Release and tags to verify.
+
+Github Repository overview:
+Create, edit, delete files directly in github
+Recommended do most work on your local system and push changes to github
+
+Starting Remote Approach:
+Create a repository in github and all of the initial files are created.
+   Initialize with a README.md file, add .gitignore (Node), and Add a license for Apache License 2.0
+   
+Create a local copy with Clone:
+Open your repository.  Select clone with ssh
+Go into the top level directory you want the repository under
+Type git clone and the ssh URL provided.
+Go into the new directory named for the repository and the repo is local now
+ 
+$ git clone git@ghe.aa.com:00218666/my-website.git
+Cloning into 'my-website'...
+remote: Enumerating objects: 4, done.
+remote: Counting objects: 100% (4/4), done.
+remote: Compressing objects: 100% (3/3), done.
+remote: Total 4 (delta 0), reused 0 (delta 0), pack-reused 0
+Receiving objects: 100% (4/4), done.$ git push origin master
+
+
+Specify the folder to use:
+$ git clone git@ghe.aa.com:00218666/my-website.git website
+ 
+Seeding the repository with a set of files:
+www.initializr.coDownload a template and extract into the websiter folder
+git add .
+git status  	<--  List a bunch of new files
+$ git commit -m "Adding initial web files"
+$ git push origin master
+
+
+Publish back to github:
+Abbreviating our push command
+git push  	<-- by itself gives a warning to configure push.default behavior
+$ git config --global push.default simple
+$ git push
+Everything up-to-date
+
+Fetch and Pull:
+Edit index.html within github
+
+Local repo is not aware of the changes
+$ git status
+On branch master
+Your branch is up to date with 'origin/master'.
+
+nothing to commit, working tree clean
+
+Edit and commit README.md on local repo:
+$ vi README.md
+$ git commit -am "Update for README.md"
+[master f95890e] Update for README.md
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+$ git status
+On branch master
+Your branch is ahead of 'origin/master' by 1 commit.   <-- We are ahead of master but master still has an updated index.html
+  (use "git push" to publish your local commits)
+
+nothing to commit, working tree clean
+
+Trying to push is rejected:
+$ git push
+To ghe.aa.com:00218666/my-website.git
+ ! [rejected]        master -> master (fetch first)
+error: failed to push some refs to 'git@ghe.aa.com:00218666/my-website.git'
+hint: Updates were rejected because the remote contains work that you do
+hint: not have locally. This is usually caused by another repository pushing
+hint: to the same ref. You may want to first integrate the remote changes
+hint: (e.g., 'git pull ...') before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+
+Pull is a combo of fetch and merge.  Fetch by itself is non-destructive
+$ git fetch
+remote: Enumerating objects: 5, done.
+remote: Counting objects: 100% (5/5), done.
+remote: Compressing objects: 100% (3/3), done.
+remote: Total 3 (delta 2), reused 0 (delta 0), pack-reused 0
+Unpacking objects: 100% (3/3), 318 bytes | 2.00 KiB/s, done.
+From ghe.aa.com:00218666/my-website
+   06bd019..0966a5c  master     -> origin/master
+
+Then do git pull:
+git pull  <-- Opens a Merge message either add comments and save or just save
+
+Then you can push the merged repo back to github:
+$ git push
+Enumerating objects: 9, done.
+Counting objects: 100% (8/8), done.
+Delta compression using up to 4 threads
+Compressing objects: 100% (4/4), done.
+Writing objects: 100% (5/5), 580 bytes | 193.00 KiB/s, done.
+Total 5 (delta 2), reused 0 (delta 0)
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+To ghe.aa.com:00218666/my-website.git
+   0966a5c..3be53a8  master -> master
+
+Repository features and settings:
+Tour of github interface.
+Renamed my-website to website.
+
+Updating Repository and Remote References:
+Now that we renamed the repo, all the clones will still reference my-website
+$ git remote -v
+origin  git@ghe.aa.com:00218666/my-website.git (fetch)
+origin  git@ghe.aa.com:00218666/my-website.git (push)
+
+Go to github and copy the new URL then run this:
+$ git remote set-url origin git@ghe.aa.com:00218666/demo.git
+$ git remote -v
+origin  git@ghe.aa.com:00218666/demo.git (fetch)
+origin  git@ghe.aa.com:00218666/demo.git (push)
+$ git remote show origin
+* remote origin
+  Fetch URL: git@ghe.aa.com:00218666/demo.git
+  Push  URL: git@ghe.aa.com:00218666/demo.git
+  HEAD branch: master
+  Remote branch:
+    master tracked
+  Local branch configured for 'git pull':
+    master merges with remote master
+  Local ref configured for 'git push':
+    master pushes to master (local out of date)
+
+Edit files through github:
+Beneficial for very minor changes
+
+Create new files in github:
+Click create new file.
+lipsum.txt   <-- Copy some text from lipsum.com
+
+This time save to a new branch
+A text box opens to add more detail
+Save
+
+Since this is your repo, just click merge pull request and confirm merge
+
+Create files directly on the master branch:
+Create demo.txt and click save directly to master branch
+
+
+Rename and delete files directly in github:
+When editing a file, you also can rename the file as well.
+
+Open a file you need to delete and click the trashcan button.
+Commit to finish deleting the file
+
+Synchronizing our changes with our local repository:
+$ git status
+On branch master
+Your branch is up to date with 'origin/master'.
+
+nothing to commit, working tree clean
+
+$ git fetch
+warning: no common commits
+remote: Enumerating objects: 39, done.
+remote: Counting objects: 100% (39/39), done.
+remote: Compressing objects: 100% (19/19), done.
+remote: Total 39 (delta 15), reused 39 (delta 15), pack-reused 0
+Unpacking objects: 100% (39/39), 3.50 KiB | 5.00 KiB/s, done.
+From ghe.aa.com:00218666/demo
+ + 3be53a8...cdb00ce master     -> origin/master  (forced update)
+ * [new tag]         v1.0       -> v1.0
+
+FUN mess up.  I had set-url to demo.git instead of website.git:
+
+$ git pull
+fatal: refusing to merge unrelated histories
+
+Noticed the site was still my-website:
+$ git hist
+*   3be53a8 (HEAD -> master) Merge branch 'master' of ghe.aa.com:00218666/my-website
+
+Fixed it:
+$ git remote set-url origin git@ghe.aa.com:00218666/website.git
+
+Pull worked now:
+$ git pull
+remote: Enumerating objects: 15, done.
+remote: Counting objects: 100% (15/15), done.
+remote: Compressing objects: 100% (12/12), done.
+remote: Total 13 (delta 6), reused 0 (delta 0), pack-reused 0
+Unpacking objects: 100% (13/13), 1.58 KiB | 8.00 KiB/s, done.
+From ghe.aa.com:00218666/website
+ + cdb00ce...1fc475a master         -> origin/master  (forced update)
+ * [new branch]      feature-lipsum -> origin/feature-lipsum
+Updating 3be53a8..1fc475a
+Fast-forward
+ demo.md    | 5 +++++
+ index.html | 2 +-
+ lipsum.txt | 2 ++
+ 3 files changed, 8 insertions(+), 1 deletion(-)
+ create mode 100644 demo.md
+ create mode 100644 lipsum.txt
+
+
+Reviewing commits with the Commit list:
+In github, select commits tab to see history grouped by date.
+
+Commit details:
+Look in commit history
+find a commit you want more information about
+Click on the button with the abbreviated sha1 commit
+
+
+Github time travel:
+View commits, select browse files to see the files as of that commit.
+
+Using commit IDs with the local repository:Find a commit, click the clipboard for the full sha1 commit ID$ git show f95890e8b062907c34c4fc3cf2ebfa8d602fff4e
+
+- Repository Branches on GitHub:
+Creating a branch in GitHub
+In your repo, click branch drop down for a text box where you can add a branch
+
+Create a branch in local repo:
+git checkout -b remove-ipsum 
+git rm limpsum.txt
+git status
+git commit -m "Removing ipsum"
+$ git push -u origin remove-ipsum
+Enumerating objects: 3, done.
+Counting objects: 100% (3/3), done.
+Delta compression using up to 4 threads
+Compressing objects: 100% (2/2), done.
+Writing objects: 100% (2/2), 235 bytes | 78.00 KiB/s, done.
+Total 2 (delta 1), reused 0 (delta 0)
+remote: Resolving deltas: 100% (1/1), completed with 1 local object.
+remote:
+remote: Create a pull request for 'remove-ipsum' on GitHub by visiting:
+remote:      https://ghe.aa.com/00218666/website/pull/new/remove-ipsum
+remote:
+To ghe.aa.com:00218666/website.git
+ * [new branch]      remove-ipsum -> remove-ipsum
+Branch 'remove-ipsum' set up to track remote branch 'remove-ipsum' from 'origin'.
+
+Comparing and Pull requests:
+In GitHub, notice recently pushed branches with a Compare and pull request button
+
+Click the compare and pull request button
+Github will automatically prepare a compare request with a diff at the bottom. 
+You can change the view to split for side to side view.
+You can add comments in markdown language
+
+After sumbitting, there is a Merge pull request button.
+
+
+Merging locally:
+git checkout master
+git pull
+git merge fix-index
+git add .
+git commit -am "fix index"
+
+git fetch -p  <-- shows orphaned branches and removes them
+git branch -a
+
+Locally switch to a branch on github:
+Create a new branch in GitHub
+
+Command line:
+git status
+git branch -a
+git fetch
+git branch -a
+git checkout update-readme
+git branch -a  	<-- now there is a local copy of the branch
+git commit -am "More tweaks to README"
+
+
+Cleaning up by deleting branches and references:
+Update the readme once more from github and save
+
+In command line, we are still in update-readme branch
+git status
+git checkout master
+git config --gloabl -e
+git pull --all   <-- pulls everything branches and all
+Fetching origin
+remote: Enumerating objects: 5, done.
+remote: Counting objects: 100% (5/5), done.
+remote: Compressing objects: 100% (3/3), done.
+remote: Total 3 (delta 2), reused 0 (delta 0), pack-reused 0
+Unpacking objects: 100% (3/3), 315 bytes | 4.00 KiB/s, done.
+From ghe.aa.com:00218666/website
+   8b4180e..fb66ff5  update-readme -> origin/update-readme
+Already up to date.
+$ git merge update-readme
+Merge made by the 'recursive' strategy.
+ README.md | 4 ++++
+ 1 file changed, 4 insertions(+)
+$ git push
+Enumerating objects: 9, done.
+Counting objects: 100% (8/8), done.
+Delta compression using up to 4 threads
+Compressing objects: 100% (5/5), done.
+Writing objects: 100% (5/5), 542 bytes | 108.00 KiB/s, done.
+Total 5 (delta 3), reused 0 (delta 0)
+remote: Resolving deltas: 100% (3/3), completed with 2 local objects.
+To ghe.aa.com:00218666/website.git
+   57e83a8..793fce8  master -> master
+$ git branch -a
+* master
+  update-readme
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/feature-lipsum
+  remotes/origin/fix-index
+  remotes/origin/master
+  remotes/origin/update-readme
+$ git branch -d update-readme
+Deleted branch update-readme (was 8b4180e).
+$ git push origin :update-readme    <-- The colon indicates to delete the remote branch
+To ghe.aa.com:00218666/website.git
+ - [deleted]         update-readme
+
+
+Pull with rebase:
+Rewinds the current branch you are in to a point the branch you are working in diverged, then play back the commits that happened 
+on the branch you want to bring in then playing back the commits of the branch you are currently working on.
+This brings any changes on theother branch in to your branch and puts your changes ahead of them.
+
+git status
+git pull
+
+Edit the README file in master within github
+Commit the changes
+
+Back to local repository
+edit index.html
+git commit -am "updated index.html before rebase"
+git fetch
+git status   <-- local branch master has diverged from remote branch master
+git pull --rebase  
+git history   <-- git rewound our local changes and merged the remote master changes then re-committed the local changes
+git push
+
+Confirm in github that both changes are there.
+
+Github Graphs:
+Local system:
+git status
+git log --oneline --graph
+press q to exit
+git hist
+
+Switch to github:
+right side - repository menu - graphs - network
+
+
+Swetting the default branch:
+Github - 
+on master branch
+Active development should not happen in the master branch
+Expand branch drop down
+Create a branch named develop
+Click settings
+Change the default branch to develop
+click update
+
+Copy the new URL
+GO to terminal backup one level above the repsitory
+git clone and paste the copied URL
+cd new repository
+git branch -a
+git checkout master
+develop is still the default branch
+
+
+
+
+
+
+
+
+
+
+
+
